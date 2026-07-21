@@ -31,10 +31,29 @@ const useAnecdoteStore = create((set) => ({
         )
       })),
 
-    create: (content) =>
-      set((state) => ({
-        anecdotes: state.anecdotes.concat(asObject(content))
-      })),
+    create: async (content) => {
+  const newAnecdote = {
+    content,
+    votes: 0
+  }
+
+  const response = await fetch(
+    'http://localhost:3001/anecdotes',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(newAnecdote)
+    }
+  )
+
+  const createdAnecdote = await response.json()
+
+  set((state) => ({
+    anecdotes: state.anecdotes.concat(createdAnecdote)
+  }))
+},
 
     setFilter: (filter) =>
       set({
