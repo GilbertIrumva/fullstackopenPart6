@@ -6,7 +6,8 @@ import {
 
 import {
   getAnecdotes,
-  createAnecdote
+  createAnecdote,
+  updateAnecdote
 } from './requests'
 
 const App = () => {
@@ -27,6 +28,15 @@ const App = () => {
     }
   })
 
+  const voteMutation = useMutation({
+    mutationFn: updateAnecdote,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['anecdotes']
+      })
+    }
+  })
+
   const onCreate = (event) => {
     event.preventDefault()
 
@@ -37,6 +47,13 @@ const App = () => {
     newAnecdoteMutation.mutate({
       content,
       votes: 0
+    })
+  }
+
+  const vote = (anecdote) => {
+    voteMutation.mutate({
+      ...anecdote,
+      votes: anecdote.votes + 1
     })
   }
 
@@ -69,8 +86,15 @@ const App = () => {
       {anecdotes.map((anecdote) => (
         <div key={anecdote.id}>
           <div>{anecdote.content}</div>
+
           <div>
             has {anecdote.votes} votes
+
+            <button
+              onClick={() => vote(anecdote)}
+            >
+              vote
+            </button>
           </div>
         </div>
       ))}

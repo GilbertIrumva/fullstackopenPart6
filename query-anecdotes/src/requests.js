@@ -15,3 +15,12 @@ export const createAnecdote = async (newAnecdote) => {
 
   return response.data
 }
+
+export const updateAnecdote = async (anecdote) => {
+  const response = await axios.put(
+    `${baseUrl}/${anecdote.id}`,
+    anecdote
+  )
+
+  return response.data
+}
