@@ -1,12 +1,18 @@
 
-import { render, screen, cleanup} from '@testing-library/react'
+import {
+  render,
+  screen,
+  cleanup,
+  fireEvent
+} from '@testing-library/react'
 
 import {
   describe,
   test,
   expect,
   beforeEach,
-  afterEach
+  afterEach,
+  vi
 } from 'vitest'
 
 import AnecdoteList from './AnecdoteList'
@@ -56,11 +62,9 @@ describe('AnecdoteList', () => {
     expect(renderedContent[0]).toBe(
       'most votes'
     )
-
     expect(renderedContent[1]).toBe(
       'middle votes'
     )
-
     expect(renderedContent[2]).toBe(
       'least votes'
     )
@@ -101,6 +105,35 @@ describe('AnecdoteList', () => {
     expect(
       screen.queryByText('Vue is good')
     ).toBeNull()
+  })
+
+  test('voting increases anecdote votes', async () => {
+    const voteMock = vi.fn()
+
+    useAnecdoteStore.setState({
+      anecdotes: [
+        {
+          id: '1',
+          content: 'test anecdote',
+          votes: 1
+        }
+      ],
+      filter: '',
+      actions: {
+        ...useAnecdoteStore.getState().actions,
+        vote: voteMock
+      }
+    })
+
+    render(<AnecdoteList />)
+
+    const voteButton =
+      screen.getByText('vote')
+
+    fireEvent.click(voteButton)
+
+    expect(voteMock).toHaveBeenCalledTimes(1)
+    expect(voteMock).toHaveBeenCalledWith('1')
   })
 })
 
