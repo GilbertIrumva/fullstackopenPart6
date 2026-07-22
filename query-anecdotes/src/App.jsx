@@ -1,7 +1,6 @@
-import {useMutation, useQueryClient} from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import useAnecdotes from './hooks/useAnecdotes'
-
 import Notification from './components/Notification'
 
 import {
@@ -9,86 +8,61 @@ import {
   updateAnecdote
 } from './requests'
 
-import {
-  useNotificationDispatch
-} from './NotificationContext'
+import { useNotify } from './NotificationContext'
 
 const App = () => {
   const queryClient = useQueryClient()
-  const dispatch = useNotificationDispatch()
+  const notify = useNotify()
 
   const result = useAnecdotes()
 
-  const showNotification = (message) => {
-    dispatch({
-      type: 'SET_NOTIFICATION',
-      payload: message
-    })
+  const newAnecdoteMutation = useMutation({
+    mutationFn: createAnecdote,
 
-    setTimeout(() => {
-      dispatch({
-        type: 'CLEAR_NOTIFICATION'
+    onSuccess: (newAnecdote) => {
+      queryClient.invalidateQueries({
+        queryKey: ['anecdotes']
       })
-    }, 5000)
-  }
 
+      notify(
+        `you created '${newAnecdote.content}'`
+      )
+    },
 
-const newAnecdoteMutation = useMutation({
-  mutationFn: createAnecdote,
-
-  onSuccess: (newAnecdote) => {
-    queryClient.invalidateQueries({
-      queryKey: ['anecdotes']
-    })
-
-    showNotification(
-      `you created '${newAnecdote.content}'`
-    )
-  },
-
-  onError: (error) => {
-    showNotification(
-      error.response.data.error
-    )
-  }
-})
-
+    onError: () => {
+      notify(
+        'too short anecdote, must have length 5 or more'
+      )
+    }
+  })
 
   const voteMutation = useMutation({
     mutationFn: updateAnecdote,
+
     onSuccess: (updatedAnecdote) => {
       queryClient.invalidateQueries({
         queryKey: ['anecdotes']
       })
 
-      showNotification(
+      notify(
         `you voted '${updatedAnecdote.content}'`
       )
     }
   })
 
+  const addAnecdote = (event) => {
+    event.preventDefault()
 
-const addAnecdote = (event) => {
-  event.preventDefault()
+    const content =
+      event.target.anecdote.value.trim()
 
-  const content = event.target.anecdote.value.trim()
+    newAnecdoteMutation.mutate({
+      content,
+      votes: 0
+    })
 
-  if (content.length < 5) {
-    showNotification(
-      'too short anecdote, must have length 5 or more'
-    )
-    return
+    event.target.anecdote.value = ''
   }
-
-  newAnecdoteMutation.mutate({
-    content,
-    votes: 0
-  })
-
-  event.target.anecdote.value = ''
-}
-
-
 
   const vote = (anecdote) => {
     voteMutation.mutate({
@@ -146,3 +120,4 @@ const addAnecdote = (event) => {
 }
 
 export default App
+

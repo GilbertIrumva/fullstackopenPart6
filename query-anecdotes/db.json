@@ -22,7 +22,7 @@
     },
     {
       "content": "my new anecdote",
-      "votes": 3,
+      "votes": 4,
       "id": "zyz0DzCROM8"
     },
     {
@@ -49,6 +49,11 @@
       "content": "hello",
       "votes": 0,
       "id": "GKi6YF7qx0w"
+    },
+    {
+      "content": "Query is powerful",
+      "votes": 0,
+      "id": "6wbHRx38pxc"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
