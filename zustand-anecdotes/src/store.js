@@ -22,38 +22,61 @@ const useAnecdoteStore = create((set) => ({
       })
     },
 
-    vote: (id) =>
+    vote: async (id) => {
+      const anecdote = useAnecdoteStore
+        .getState()
+        .anecdotes.find((a) => a.id === id)
+
+      const updatedAnecdote = {
+        ...anecdote,
+        votes: anecdote.votes + 1
+      }
+
+      const response = await fetch(
+        `http://localhost:3001/anecdotes/${id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(updatedAnecdote)
+        }
+      )
+
+      const returnedAnecdote = await response.json()
+
       set((state) => ({
         anecdotes: state.anecdotes.map((anecdote) =>
           anecdote.id === id
-            ? { ...anecdote, votes: anecdote.votes + 1 }
+            ? returnedAnecdote
             : anecdote
         )
-      })),
+      }))
+    },
 
     create: async (content) => {
-  const newAnecdote = {
-    content,
-    votes: 0
-  }
+      const newAnecdote = {
+        content,
+        votes: 0
+      }
 
-  const response = await fetch(
-    'http://localhost:3001/anecdotes',
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(newAnecdote)
-    }
-  )
+      const response = await fetch(
+        'http://localhost:3001/anecdotes',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(newAnecdote)
+        }
+      )
 
-  const createdAnecdote = await response.json()
+      const createdAnecdote = await response.json()
 
-  set((state) => ({
-    anecdotes: state.anecdotes.concat(createdAnecdote)
-  }))
-},
+      set((state) => ({
+        anecdotes: state.anecdotes.concat(createdAnecdote)
+      }))
+    },
 
     setFilter: (filter) =>
       set({
