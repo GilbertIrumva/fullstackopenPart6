@@ -1,13 +1,5 @@
 import { create } from 'zustand'
 
-const getId = () => (100000 * Math.random()).toFixed(0)
-
-const asObject = (anecdote) => ({
-  content: anecdote,
-  id: getId(),
-  votes: 0
-})
-
 const useAnecdoteStore = create((set) => ({
   anecdotes: [],
   filter: '',
@@ -17,9 +9,7 @@ const useAnecdoteStore = create((set) => ({
       const response = await fetch('http://localhost:3001/anecdotes')
       const anecdotes = await response.json()
 
-      set({
-        anecdotes
-      })
+      set({ anecdotes })
     },
 
     vote: async (id) => {
@@ -50,6 +40,21 @@ const useAnecdoteStore = create((set) => ({
           anecdote.id === id
             ? returnedAnecdote
             : anecdote
+        )
+      }))
+    },
+
+    delete: async (id) => {
+      await fetch(
+        `http://localhost:3001/anecdotes/${id}`,
+        {
+          method: 'DELETE'
+        }
+      )
+
+      set((state) => ({
+        anecdotes: state.anecdotes.filter(
+          (anecdote) => anecdote.id !== id
         )
       }))
     },
