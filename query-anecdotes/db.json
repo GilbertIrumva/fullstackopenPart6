@@ -3,7 +3,7 @@
     {
       "content": "If it hurts, do it more often",
       "id": "1",
-      "votes": 0
+      "votes": 1
     },
     {
       "content": "Adding manpower to a late software project makes it later!",
@@ -19,6 +19,16 @@
       "content": "React Query is powerful",
       "votes": 1,
       "id": "Du_GPIZNxgk"
+    },
+    {
+      "content": "my new anecdote",
+      "votes": 3,
+      "id": "zyz0DzCROM8"
+    },
+    {
+      "content": "React Query is exellent",
+      "votes": 0,
+      "id": "xZ3TPRerr1k"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

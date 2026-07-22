@@ -1,43 +1,64 @@
-import {
-  useQuery,
-  useMutation,
-  useQueryClient
-} from '@tanstack/react-query'
+import {useMutation, useQueryClient} from '@tanstack/react-query'
+
+import useAnecdotes from './hooks/useAnecdotes'
+
+import Notification from './components/Notification'
 
 import {
-  getAnecdotes,
   createAnecdote,
   updateAnecdote
 } from './requests'
 
+import {
+  useNotificationDispatch
+} from './NotificationContext'
+
 const App = () => {
   const queryClient = useQueryClient()
+  const dispatch = useNotificationDispatch()
 
-  const result = useQuery({
-    queryKey: ['anecdotes'],
-    queryFn: getAnecdotes,
-    retry: false
-  })
+  const result = useAnecdotes()
+
+  const showNotification = (message) => {
+    dispatch({
+      type: 'SET_NOTIFICATION',
+      payload: message
+    })
+
+    setTimeout(() => {
+      dispatch({
+        type: 'CLEAR_NOTIFICATION'
+      })
+    }, 5000)
+  }
 
   const newAnecdoteMutation = useMutation({
     mutationFn: createAnecdote,
-    onSuccess: () => {
+    onSuccess: (newAnecdote) => {
       queryClient.invalidateQueries({
         queryKey: ['anecdotes']
       })
+
+      showNotification(
+        `you created '${newAnecdote.content}'`
+      )
     }
   })
 
   const voteMutation = useMutation({
     mutationFn: updateAnecdote,
-    onSuccess: () => {
+    onSuccess: (updatedAnecdote) => {
       queryClient.invalidateQueries({
         queryKey: ['anecdotes']
       })
+
+      showNotification(
+        `you voted '${updatedAnecdote.content}'`
+      )
     }
   })
 
-  const onCreate = (event) => {
+  const addAnecdote = (event) => {
     event.preventDefault()
 
     const content = event.target.anecdote.value
@@ -76,8 +97,11 @@ const App = () => {
     <div>
       <h3>Anecdote app</h3>
 
-      <form onSubmit={onCreate}>
+      <Notification />
+
+      <form onSubmit={addAnecdote}>
         <input name="anecdote" />
+
         <button type="submit">
           create
         </button>
