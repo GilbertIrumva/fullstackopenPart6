@@ -1,4 +1,3 @@
-
 import {
   useAnecdotes,
   useFilter,
@@ -37,15 +36,7 @@ const AnecdoteList = () => {
   }
 
   const remove = async (id) => {
-    const anecdote = anecdotes.find(
-      (a) => a.id === id
-    )
-
     await actions.delete(id)
-
-    setNotification(
-      `you deleted '${anecdote.content}'`
-    )
   }
 
   return (
@@ -62,7 +53,9 @@ const AnecdoteList = () => {
             </button>
 
             {anecdote.votes === 0 && (
-              <button onClick={() => remove(anecdote.id)}>
+              <button
+                onClick={() => remove(anecdote.id)}
+              >
                 delete
               </button>
             )}
@@ -74,4 +67,3 @@ const AnecdoteList = () => {
 }
 
 export default AnecdoteList
-

@@ -1,19 +1,21 @@
-import { useAnecdoteActions } from '../store'
+import {
+  useFilter,
+  useAnecdoteActions
+} from '../store'
 
 const Filter = () => {
+  const filter = useFilter()
   const actions = useAnecdoteActions()
 
-  const handleChange = (event) => {
-    actions.setFilter(event.target.value)
-  }
-
-  const style = {
-    marginBottom: 10
-  }
-
   return (
-    <div style={style}>
-      filter <input onChange={handleChange} />
+    <div>
+      filter{' '}
+      <input
+        value={filter}
+        onChange={(event) =>
+          actions.setFilter(event.target.value)
+        }
+      />
     </div>
   )
 }

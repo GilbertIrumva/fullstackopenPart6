@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-const useAnecdoteStore = create((set) => ({
+export const useAnecdoteStore = create((set) => ({
   anecdotes: [],
   filter: '',
 
@@ -98,5 +98,3 @@ export const useFilter = () =>
 
 export const useAnecdoteActions = () =>
   useAnecdoteStore((state) => state.actions)
-
-export { useAnecdoteStore }

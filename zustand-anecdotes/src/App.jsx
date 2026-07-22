@@ -1,39 +1,29 @@
-import { useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
+import { useAnecdoteActions } from './store'
 
-import { getAnecdotes } from './requests'
+import Filter from './components/Filter'
+import AnecdoteForm from './components/AnecdoteForm'
+import AnecdoteList from './components/AnecdoteList'
+import Notification from './components/Notification'
 
 const App = () => {
-  const result = useQuery({
-    queryKey: ['anecdotes'],
-    queryFn: getAnecdotes,
-    retry: false
-  })
+  const actions = useAnecdoteActions()
 
-  if (result.isPending) {
-    return <div>loading data...</div>
-  }
-
-  if (result.isError) {
-    return (
-      <div>
-        anecdote service not available due to
-        problems in server
-      </div>
-    )
-  }
-
-  const anecdotes = result.data
+  useEffect(() => {
+    actions.initializeAnecdotes()
+  }, [])
 
   return (
     <div>
-      <h3>Anecdote app</h3>
+      <h2>Anecdotes</h2>
 
-      {anecdotes.map((anecdote) => (
-        <div key={anecdote.id}>
-          <div>{anecdote.content}</div>
-          <div>has {anecdote.votes} votes</div>
-        </div>
-      ))}
+      <Notification />
+
+      <Filter />
+
+      <AnecdoteList />
+
+      <AnecdoteForm />
     </div>
   )
 }
