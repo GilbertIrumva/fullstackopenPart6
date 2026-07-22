@@ -1,6 +1,13 @@
 
-import { render, screen } from '@testing-library/react'
-import { describe, test, expect, beforeEach } from 'vitest'
+import { render, screen, cleanup} from '@testing-library/react'
+
+import {
+  describe,
+  test,
+  expect,
+  beforeEach,
+  afterEach
+} from 'vitest'
 
 import AnecdoteList from './AnecdoteList'
 import { useAnecdoteStore } from '../store'
@@ -29,18 +36,71 @@ describe('AnecdoteList', () => {
     })
   })
 
+  afterEach(() => {
+    cleanup()
+  })
+
   test('renders anecdotes sorted by votes', () => {
-    const { container } = render(<AnecdoteList />)
+    const { container } = render(
+      <AnecdoteList />
+    )
 
     const renderedContent = Array.from(
-      container.querySelectorAll('div > div:first-child')
+      container.querySelectorAll(
+        'div > div:first-child'
+      )
     )
       .map((element) => element.textContent)
       .filter(Boolean)
 
-    expect(renderedContent[0]).toBe('most votes')
-    expect(renderedContent[1]).toBe('middle votes')
-    expect(renderedContent[2]).toBe('least votes')
+    expect(renderedContent[0]).toBe(
+      'most votes'
+    )
+
+    expect(renderedContent[1]).toBe(
+      'middle votes'
+    )
+
+    expect(renderedContent[2]).toBe(
+      'least votes'
+    )
+  })
+
+  test('renders only anecdotes matching filter', () => {
+    useAnecdoteStore.setState({
+      anecdotes: [
+        {
+          id: '1',
+          content: 'React is great',
+          votes: 5
+        },
+        {
+          id: '2',
+          content: 'Vue is good',
+          votes: 3
+        },
+        {
+          id: '3',
+          content: 'React hooks',
+          votes: 8
+        }
+      ],
+      filter: 'react'
+    })
+
+    render(<AnecdoteList />)
+
+    expect(
+      screen.getByText('React is great')
+    ).toBeTruthy()
+
+    expect(
+      screen.getByText('React hooks')
+    ).toBeTruthy()
+
+    expect(
+      screen.queryByText('Vue is good')
+    ).toBeNull()
   })
 })
 
