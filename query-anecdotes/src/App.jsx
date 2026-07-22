@@ -32,18 +32,27 @@ const App = () => {
     }, 5000)
   }
 
-  const newAnecdoteMutation = useMutation({
-    mutationFn: createAnecdote,
-    onSuccess: (newAnecdote) => {
-      queryClient.invalidateQueries({
-        queryKey: ['anecdotes']
-      })
 
-      showNotification(
-        `you created '${newAnecdote.content}'`
-      )
-    }
-  })
+const newAnecdoteMutation = useMutation({
+  mutationFn: createAnecdote,
+
+  onSuccess: (newAnecdote) => {
+    queryClient.invalidateQueries({
+      queryKey: ['anecdotes']
+    })
+
+    showNotification(
+      `you created '${newAnecdote.content}'`
+    )
+  },
+
+  onError: (error) => {
+    showNotification(
+      error.response.data.error
+    )
+  }
+})
+
 
   const voteMutation = useMutation({
     mutationFn: updateAnecdote,
