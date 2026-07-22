@@ -98,3 +98,5 @@ export const useFilter = () =>
 
 export const useAnecdoteActions = () =>
   useAnecdoteStore((state) => state.actions)
+
+export { useAnecdoteStore }

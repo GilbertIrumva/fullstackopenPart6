@@ -1,13 +1,20 @@
+
 import {
   useAnecdotes,
   useFilter,
   useAnecdoteActions
 } from '../store'
 
+import useNotificationStore from '../notificationStore'
+
 const AnecdoteList = () => {
   const anecdotes = useAnecdotes()
   const filter = useFilter()
   const actions = useAnecdoteActions()
+
+  const setNotification = useNotificationStore(
+    (state) => state.setNotification
+  )
 
   const filteredAnecdotes = anecdotes
     .filter((anecdote) =>
@@ -18,11 +25,27 @@ const AnecdoteList = () => {
     .toSorted((a, b) => b.votes - a.votes)
 
   const vote = async (id) => {
+    const anecdote = anecdotes.find(
+      (a) => a.id === id
+    )
+
     await actions.vote(id)
+
+    setNotification(
+      `you voted '${anecdote.content}'`
+    )
   }
 
   const remove = async (id) => {
+    const anecdote = anecdotes.find(
+      (a) => a.id === id
+    )
+
     await actions.delete(id)
+
+    setNotification(
+      `you deleted '${anecdote.content}'`
+    )
   }
 
   return (
@@ -51,3 +74,4 @@ const AnecdoteList = () => {
 }
 
 export default AnecdoteList
+
