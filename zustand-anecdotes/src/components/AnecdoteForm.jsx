@@ -1,7 +1,12 @@
 import { useAnecdoteActions } from '../store'
+import useNotificationStore from '../notificationStore'
 
 const AnecdoteForm = () => {
   const actions = useAnecdoteActions()
+
+  const setNotification = useNotificationStore(
+    (state) => state.setNotification
+  )
 
   const addAnecdote = async (event) => {
     event.preventDefault()
@@ -13,6 +18,10 @@ const AnecdoteForm = () => {
     }
 
     await actions.create(content)
+
+    setNotification(
+      `you created '${content}'`
+    )
 
     event.target.anecdote.value = ''
   }
